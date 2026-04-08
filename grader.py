@@ -6,7 +6,7 @@ import json
 from typing import Dict, List, Tuple
 
 
-SAFE_TASK_IDS = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"]
+SAFE_TASK_IDS = ["task_1", "task_2", "task_3", "task_4", "task_5", "task_6"]
 
 # Hard bounds: every score must be strictly inside (0, 1).
 # We use wide margins to guarantee safety even after float rounding.
@@ -59,7 +59,7 @@ def parse_inference_output(output: str) -> List[Dict]:
 
         elif line.startswith("[STEP]") and current is not None:
             match = re.search(
-                r"step=(\w+)\s+action=(\w+)\s+reward=([\d.-]+)\s+done=(\w+)\s+error=(\w+)",
+                r"step=(\S+)\s+action=(\w+)\s+reward=([\d.-]+)\s+done=(\w+)\s+error=(\w+)",
                 line,
             )
             if match:
@@ -75,16 +75,17 @@ def parse_inference_output(output: str) -> List[Dict]:
 
         elif line.startswith("[END]") and current is not None:
             match = re.search(
-                r"success=(\w+)\s+rewards=([\d.,\s-]+)",
+                r"success=(\w+)\s+(?:steps=(\d+)\s+)?rewards=([\d.,\s-]+)",
                 line,
             )
             if match:
                 current["success"] = match.group(1) == "true"
-                rewards_str = match.group(2)
+                rewards_str = match.group(3)
                 current["rewards"] = [
                     float(r.strip()) for r in rewards_str.split(",") if r.strip()
                 ]
-                current["steps"] = len(current["rewards"])
+                parsed_steps = int(match.group(2)) if match.group(2) else len(current["rewards"])
+                current["steps"] = parsed_steps
             tasks.append(current)
             current = None
 
