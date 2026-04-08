@@ -79,15 +79,16 @@ def grade_task(data: Dict) -> Tuple[float, Dict]:
     # Keep scores strictly inside (0, 1) so validation accepts every task.
     # Successful runs should be rewarded, but never with a hard 1.0.
     if data["success"]:
-        score = 0.55
+        score = 0.50
     else:
-        score = 0.20
+        score = 0.15
 
-    # Reward bonus (up to 0.35)
+    # Reward bonus (up to 0.30)
     total_reward = sum(data["rewards"])
-    max_possible = 3.80  # As defined in inference.py
+    # Dynamic max_possible calculation
+    max_possible = 3 * (0.30 + 0.25) + 4 * (0.20 + 0.20) + 6 * (0.13 + 0.22) + 3 * 0.05
     reward_ratio = min(total_reward / max_possible, 1.0) if max_possible > 0 else 0
-    score += reward_ratio * 0.35
+    score += reward_ratio * 0.30
 
     # Check for violations
     for step_detail in data["step_details"]:
@@ -100,9 +101,11 @@ def grade_task(data: Dict) -> Tuple[float, Dict]:
     score -= violation_penalty
 
     # Ensure score is strictly between 0 and 1 (not 0.0, not 1.0)
-    score = max(0.01, min(0.99, score))
+    score = max(0.001, min(0.999, score))
+    score = round(score, 3)
+    score = max(0.011, min(0.989, score))
 
-    details["final_score"] = round(score, 3)
+    details["final_score"] = score
 
     return score, details
 
@@ -151,7 +154,9 @@ def main():
         graded_tasks.append((task_data, score, details))
 
     overall_score = sum(score for _, score, _ in graded_tasks) / len(graded_tasks)
-    overall_score = max(0.01, min(0.99, overall_score))
+    overall_score = max(0.001, min(0.999, overall_score))
+    overall_score = round(overall_score, 3)
+    overall_score = max(0.011, min(0.989, overall_score))
 
     # Print results in both human-readable and machine-parseable format
     print(f"{'='*60}")

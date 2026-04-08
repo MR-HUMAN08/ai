@@ -149,7 +149,7 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
                 current_state="REPEAT",
                 output=f"Phase '{act}' already done. Advance to next phase.",
                 difficulty=task["difficulty"],
-                reward=max(0.01, min(0.99, 0.0)),
+                reward=max(0.01, min(0.99, -0.05)),
                 done=False,
             )
             return obs

@@ -27,9 +27,9 @@ RULES:
 Valid actions: scan, enumerate, exploit, escalate, c2, cleanup"""
 
 TASKS_META = [
-    {"index": 0, "name": "Easy Web Vuln",      "difficulty": "easy",   "max_steps": 3},
-    {"index": 1, "name": "Medium SQLi + RCE",  "difficulty": "medium", "max_steps": 4},
-    {"index": 2, "name": "Hard Multi-Stage APT","difficulty": "hard",   "max_steps": 6},
+    {"index": 0, "name": "Easy Web Vuln",      "difficulty": "easy",   "max_steps": 3, "required_steps": ["scan", "enumerate", "exploit"]},
+    {"index": 1, "name": "Medium SQLi + RCE",  "difficulty": "medium", "max_steps": 4, "required_steps": ["scan", "enumerate", "exploit", "escalate"]},
+    {"index": 2, "name": "Hard Multi-Stage APT","difficulty": "hard",   "max_steps": 6, "required_steps": ["scan", "enumerate", "exploit", "escalate", "c2", "cleanup"]},
 ]
 
 def log_start(task, env, model):
@@ -66,7 +66,8 @@ async def run_task(client, env, task_meta, global_step):
     max_steps = task_meta["max_steps"] + 3  # small buffer
 
     for _ in range(max_steps):
-        remaining = [a for a in all_valid if a not in completed_steps]
+        required_steps = task_meta.get("required_steps", all_valid)
+        remaining = [a for a in required_steps if a not in completed_steps]
         if not remaining:
             break
 
@@ -106,7 +107,7 @@ async def run_task(client, env, task_meta, global_step):
         reward = float(obs.reward or 0.0)
         done = bool(obs.done)
 
-        if reward > 0 and action_str not in completed_steps:
+        if obs.current_state not in ("INVALID", "ORDER_VIOLATION", "REPEAT") and action_str not in completed_steps:
             completed_steps.append(action_str)
 
         log_step(global_step, action_str, reward, done)
