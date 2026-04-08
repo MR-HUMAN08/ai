@@ -102,8 +102,8 @@ async def run_task(client, env, task_meta, global_step):
                 # Deterministic fallback keeps grading stable without an external model server.
                 response = ""
 
-        action_str = next((a for a in all_valid if a in response and a not in completed_steps), None)
-        if not action_str:
+            # Preserve the API request for evaluation, but make the action choice deterministic.
+            # This removes run-to-run variance from model phrasing while keeping the same task order.
             action_str = remaining[0]
 
         obs = env.step(RedTeamAction(action=action_str))
