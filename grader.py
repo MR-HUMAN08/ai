@@ -101,7 +101,8 @@ def grade_task(data: Dict) -> Tuple[float, Dict]:
     score -= violation_penalty
 
     # Ensure score is strictly between 0 and 1 (not 0.0, not 1.0)
-    score = max(0.001, min(0.999, score))
+    # CRITICAL: Use 0.998 to prevent round(0.9999, 3) = 1.0
+    score = max(0.002, min(0.998, score))
     score = round(score, 3)
     score = max(0.011, min(0.989, score))
 
@@ -154,7 +155,8 @@ def main():
         graded_tasks.append((task_data, score, details))
 
     overall_score = sum(score for _, score, _ in graded_tasks) / len(graded_tasks)
-    overall_score = max(0.001, min(0.999, overall_score))
+    # CRITICAL: Use 0.998 to prevent round(0.9999, 3) = 1.0
+    overall_score = max(0.002, min(0.998, overall_score))
     overall_score = round(overall_score, 3)
     overall_score = max(0.011, min(0.989, overall_score))
 
