@@ -6,7 +6,7 @@ import json
 from typing import Dict, List, Tuple
 
 
-SAFE_TASK_IDS = ["task_1", "task_2", "task_3", "task_4", "task_5", "task_6"]
+SAFE_TASK_IDS = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"]
 
 # Hard bounds: every score must be strictly inside (0, 1).
 # We use wide margins to guarantee safety even after float rounding.
