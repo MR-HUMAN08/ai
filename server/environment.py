@@ -74,7 +74,7 @@ STEP_REWARDS = {
     "hard":   {"base": 0.09, "completion_bonus": 0.06},
 }
 CHAIN_BONUS = 0.02
-PENALTY_WRONG_ORDER = -0.20
+PENALTY_WRONG_ORDER = -0.08
 
 
 class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, RedTeamState]):
@@ -105,6 +105,8 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
                 f"Required phases: {' -> '.join(task['required_steps'])}"
             ),
             difficulty=task["difficulty"],
+            reward=0.01,
+            done=False,
         )
 
     def step(self, action: RedTeamAction, timeout_s=None, **kwargs) -> RedTeamObservation:
@@ -121,7 +123,7 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
                 current_state="INVALID",
                 output=f"Action '{act}' not required for this task. Required: {required}",
                 difficulty=task["difficulty"],
-                reward=max(0.01, min(0.99, -0.10)),
+                reward=max(0.01, min(0.99, -0.03)),
                 done=False,
             )
             return obs
@@ -150,7 +152,7 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
                 current_state="REPEAT",
                 output=f"Phase '{act}' already done. Advance to next phase.",
                 difficulty=task["difficulty"],
-                reward=max(0.01, min(0.99, -0.05)),
+                reward=max(0.01, min(0.99, 0.0)),
                 done=False,
             )
             return obs

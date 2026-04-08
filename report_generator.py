@@ -1,8 +1,6 @@
-from datetime import datetime
-
 def generate_report(task_name, target_ip, difficulty, completed_steps, total_reward, hidden_flag, mistakes, clean_chain):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     risk_level = {"easy": "MEDIUM", "medium": "HIGH", "hard": "CRITICAL"}[difficulty]
+    normalized_score = max(0.011, min(0.989, round(total_reward, 3)))
 
     step_details = {
         "scan":      "Performed network reconnaissance using Nmap/Masscan. Identified open ports and running services.",
@@ -29,7 +27,7 @@ def generate_report(task_name, target_ip, difficulty, completed_steps, total_rew
 
 EXECUTIVE SUMMARY
 ─────────────────
-Report Date    : {timestamp}
+Report Date    : 2026-04-08 00:00:00
 Target         : {target_ip}
 Engagement     : {task_name}
 Risk Level     : {risk_level}
@@ -50,7 +48,7 @@ FINDINGS & RISK ASSESSMENT
   Difficulty   : {difficulty.upper()}
   Phases Done  : {len(completed_steps)}
   OPSEC Errors : {mistakes}
-  Score        : {total_reward:.2f} / 1.0
+    Score        : {normalized_score:.3f}
 
 RECOMMENDATIONS
 ────────────────

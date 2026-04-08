@@ -146,7 +146,7 @@ Engagement     : Easy Web Vuln
 Risk Level     : MEDIUM
 Result         : COMPROMISED
 CTF Flag       : FLAG{w3b_sh3ll_0wn3d_192.168.1.10}
-Total Reward   : 1.30
+Total Reward   : 0.62
 Clean Chain    : YES - No OPSEC violations
 
 ATTACK CHAIN EXECUTED
@@ -160,7 +160,7 @@ FINDINGS & RISK ASSESSMENT
   Difficulty   : EASY
   Phases Done  : 3
   OPSEC Errors : 0
-  Score        : 1.30 / 1.0
+  Score        : 0.620
 
 RECOMMENDATIONS
 ────────────────
@@ -316,7 +316,7 @@ Get current episode progress.
 redteampentestlab/
 ├── inference.py          ← Baseline agent (runs all 3 tasks, logs [START]/[STEP]/[END])
 ├── models.py             ← Pydantic types: RedTeamAction, RedTeamObservation, RedTeamState
-├── grader.py             ← Parses inference output, computes final score [0.0–1.0]
+├── grader.py             ← Parses inference output and computes a bounded final score
 ├── report_generator.py   ← Dynamic pentest report (all fields driven by actual agent run)
 ├── openenv.yaml          ← OpenEnv manifest
 ├── pyproject.toml        ← Package metadata and entry points
@@ -362,7 +362,7 @@ python grader.py run_output.txt
 # Total Reward: 3.49
 # Penalties: 0
 #
-# FINAL SCORE: 0.875 / 1.000
+# FINAL SCORE: 0.875
 # ============================================================
 ```
 
