@@ -19,6 +19,16 @@ app = create_app(
     max_concurrent_envs=1,
 )
 
+
+@app.get("/")
+def root():
+    """Lightweight root endpoint for platform probes and manual checks."""
+    return {
+        "status": "ok",
+        "service": "redteampentestlab",
+        "routes": ["/reset", "/step", "/state", "/health"],
+    }
+
 def main(host: str = "0.0.0.0", port: int = 8000):
     import uvicorn
     uvicorn.run(app, host=host, port=port)
