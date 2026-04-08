@@ -23,12 +23,9 @@ def clamp_score(score: float) -> float:
     """
     # Step 1: hard numeric clamp
     score = max(SCORE_MIN, min(SCORE_MAX, score))
-    # Step 2: round to 3 decimal places
-    score = round(score, 3)
-    # Step 3: re-clamp *after* rounding (round can push 0.005 → 0.01 → fine,
-    #          but better safe than sorry — catches any float weirdness)
+    # Re-clamp after numeric operations to keep bounds stable.
     score = max(SCORE_MIN, min(SCORE_MAX, score))
-    # Step 4: absolute safety — if somehow still at boundary, nudge inward
+    # Absolute safety — if somehow still at boundary, nudge inward.
     if score <= 0.0:
         score = SCORE_MIN
     if score >= 1.0:
@@ -193,8 +190,8 @@ def main():
         final_task_score = clamp_score(details["final_score"])
         # Validate strictly: must be > 0 and < 1
         assert 0.0 < final_task_score < 1.0, f"Score {final_task_score} is out of (0,1) range!"
-        print(f"TASK_SCORE:{task_id}:{final_task_score:.3f}")
-    print(f"OVERALL_SCORE:{overall_score:.3f}")
+        print(f"TASK_SCORE:{task_id}:{final_task_score}")
+    print(f"OVERALL_SCORE:{overall_score}")
 
     # Output JSON for machine parsing
     json_tasks = []
