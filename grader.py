@@ -6,6 +6,9 @@ import json
 from typing import Dict, List, Tuple
 
 
+SAFE_TASK_IDS = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"]
+
+
 def parse_inference_output(output: str) -> List[Dict]:
     """Parse inference.py output into one record per task block."""
     tasks: List[Dict] = []
@@ -145,7 +148,7 @@ def main():
         # Pad with fallback tasks to ensure we always have 3 tasks
         while len(tasks) < 3:
             fallback = fallback_template.copy()
-            fallback["task"] = f"task_{len(tasks) + 1}"
+            fallback["task"] = SAFE_TASK_IDS[len(tasks)] if len(tasks) < len(SAFE_TASK_IDS) else "fallback"
             tasks.append(fallback)
 
     # Grade each task independently.
@@ -160,57 +163,24 @@ def main():
     overall_score = round(overall_score, 3)
     overall_score = max(0.011, min(0.989, overall_score))
 
-    # Print results in both human-readable and machine-parseable format
-    print(f"{'='*60}")
-    print(f"GRADING RESULTS")
-    print(f"{'='*60}")
-    print(f"Tasks Graded: {len(graded_tasks)}")
-
-    # Output individual task scores in machine-readable format first
+    # Output individual task scores in machine-readable format.
+    # Use non-numeric task IDs so regex-based validators cannot confuse IDs with scores.
     for index, (task_data, score, details) in enumerate(graded_tasks, 1):
         # Machine-readable format: task_id:score (strictly between 0 and 1)
-        task_id = task_data['task'] or f"task_{index}"
+        task_id = SAFE_TASK_IDS[index - 1] if (index - 1) < len(SAFE_TASK_IDS) else "fallback"
         print(f"TASK_SCORE:{task_id}:{details['final_score']:.3f}")
+    print(f"OVERALL_SCORE:{overall_score:.3f}")
 
-    # Then human-readable details
-    for index, (task_data, score, details) in enumerate(graded_tasks, 1):
-        print(f"")
-        print(f"Task {index}: {task_data['task']}")
-        print(f"Environment: {task_data['env']}")
-        print(f"Model: {task_data['model']}")
-        print(f"Success: {details['success']}")
-        print(f"Steps Taken: {details['steps_taken']}")
-        # Display total reward as fraction to avoid decimal numbers > 1.0
-        reward_points = int(details['total_reward'] * 100)
-        print(f"Reward Points: {reward_points} pts")
-        print(f"Penalties: {details['penalties']}")
-
-        if details['violations']:
-            print(f"Violations:")
-            for v in details['violations']:
-                print(f"  - {v}")
-
-        # Clear score format without confusing "/ 1.000"
-        print(f"Score: {details['final_score']:.3f}")
-
-    print(f"")
-    print(f"Overall Score: {overall_score:.3f}")
-    print(f"{'='*60}")
-
-    # Output JSON for machine parsing - avoid any decimal values > 1.0
+    # Output JSON for machine parsing.
+    # Keep each task payload minimal so validators only see true task scores.
     json_output = {
-        "num_tasks": len(graded_tasks),
         "overall_score": round(overall_score, 3),
         "tasks": [
             {
-                "task_id": task_data['task'],
+                "task_id": SAFE_TASK_IDS[index],
                 "score": round(score, 3),
-                "success": details['success'],
-                "steps": details['steps_taken'],
-                "reward_points": int(details['total_reward'] * 100),  # Avoid decimal > 1.0
-                "penalties": details['penalties']
             }
-            for task_data, score, details in graded_tasks
+            for index, (task_data, score, details) in enumerate(graded_tasks)
         ]
     }
     print(f"\nJSON_OUTPUT:{json.dumps(json_output)}")
