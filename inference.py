@@ -107,9 +107,9 @@ async def run_task(client, env, task_meta, global_step):
             action_str = remaining[0]
 
         obs = env.step(RedTeamAction(action=action_str))
-        reward = float(obs.reward) if obs.reward is not None else 0.001
+        reward = float(obs.reward) if obs.reward is not None else 0.01
         # Ensure reward is strictly in (0, 1) - extra safety layer
-        reward = max(0.001, min(0.999, reward))
+        reward = max(0.01, min(0.99, reward))
         done = bool(obs.done)
 
         if obs.current_state not in ("INVALID", "ORDER_VIOLATION", "REPEAT") and action_str not in completed_steps:

@@ -82,12 +82,12 @@ def safe_reward(r: float) -> float:
 
     This is critical for Phase 2 evaluation which validates every /step response.
     """
-    clamped = max(0.001, min(0.999, r))
+    clamped = max(0.01, min(0.99, r))
     # Extra safety: if somehow exactly 0 or 1, nudge inward
     if clamped <= 0.0:
-        return 0.001
+        return 0.01
     if clamped >= 1.0:
-        return 0.999
+        return 0.99
     return round(clamped, 3)
 
 
