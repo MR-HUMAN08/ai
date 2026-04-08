@@ -77,6 +77,20 @@ CHAIN_BONUS = 0.02
 PENALTY_WRONG_ORDER = -0.08
 
 
+def safe_reward(r: float) -> float:
+    """Ensure reward is STRICTLY between 0 and 1 (never 0.0, never 1.0).
+
+    This is critical for Phase 2 evaluation which validates every /step response.
+    """
+    clamped = max(0.001, min(0.999, r))
+    # Extra safety: if somehow exactly 0 or 1, nudge inward
+    if clamped <= 0.0:
+        return 0.001
+    if clamped >= 1.0:
+        return 0.999
+    return round(clamped, 3)
+
+
 class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, RedTeamState]):
     def __init__(self):
         self.task_index = 0
@@ -105,7 +119,7 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
                 f"Required phases: {' -> '.join(task['required_steps'])}"
             ),
             difficulty=task["difficulty"],
-            reward=0.01,
+            reward=safe_reward(0.01),
             done=False,
         )
 
@@ -123,7 +137,7 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
                 current_state="INVALID",
                 output=f"Action '{act}' not required for this task. Required: {required}",
                 difficulty=task["difficulty"],
-                reward=max(0.01, min(0.99, -0.03)),
+                reward=safe_reward(-0.03),
                 done=False,
             )
             return obs
@@ -140,7 +154,7 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
                     f"Progress: {self.completed_steps}"
                 ),
                 difficulty=task["difficulty"],
-                reward=max(0.01, min(0.99, PENALTY_WRONG_ORDER)),
+                reward=safe_reward(PENALTY_WRONG_ORDER),
                 done=False,
             )
             self.total_reward += PENALTY_WRONG_ORDER
@@ -152,7 +166,7 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
                 current_state="REPEAT",
                 output=f"Phase '{act}' already done. Advance to next phase.",
                 difficulty=task["difficulty"],
-                reward=max(0.01, min(0.99, 0.0)),
+                reward=safe_reward(0.01),
                 done=False,
             )
             return obs
@@ -192,7 +206,7 @@ class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, R
             current_state=state,
             output=output,
             difficulty=task["difficulty"],
-            reward=max(0.01, min(0.99, reward)),
+            reward=safe_reward(reward),
             done=done,
         )
         return obs
