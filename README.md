@@ -71,11 +71,11 @@ FLAG{apt_s1mul4t10n_c0mpl3t3_172.16.0.0}
 | Repeated action | 0.00 |
 
 **Maximum possible per task (clean run):**
-- Easy: `(0.30 + 0.05) × 3 + 0.25 = 1.30`
-- Medium: `(0.20 + 0.05) × 4 + 0.20 = 1.20`
-- Hard: `(0.13 + 0.05) × 6 + 0.22 = 1.30`
+- Easy: `(0.16 + 0.02) × 3 + 0.08 = 0.62`
+- Medium: `(0.12 + 0.02) × 4 + 0.07 = 0.63`
+- Hard: `(0.09 + 0.01) × 6 + 0.06 = 0.66`
 
-Final score is normalized to `[0.40, 0.90]` using `raw_total / 3.80`.
+Final score stays strictly within `(0, 1)` for each task.
 
 ---
 
@@ -122,7 +122,7 @@ On task completion, the hidden flag is revealed:
 ========================================
 [+] ALL PHASES COMPLETE!
 [+] CTF FLAG CAPTURED: FLAG{w3b_sh3ll_0wn3d_192.168.1.10}
-[+] Total reward: 1.30
+[+] Total reward: 0.62
 [+] Clean chain bonus: YES
 ========================================
 ```

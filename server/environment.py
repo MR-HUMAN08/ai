@@ -68,11 +68,12 @@ ACTION_OUTPUTS = {
 }
 
 STEP_REWARDS = {
-    "easy":   {"base": 0.30, "completion_bonus": 0.25},
-    "medium": {"base": 0.20, "completion_bonus": 0.20},
-    "hard":   {"base": 0.13, "completion_bonus": 0.22},
+    # Keep each completed task's cumulative reward strictly below 1.0.
+    "easy":   {"base": 0.16, "completion_bonus": 0.08},
+    "medium": {"base": 0.12, "completion_bonus": 0.07},
+    "hard":   {"base": 0.09, "completion_bonus": 0.06},
 }
-CHAIN_BONUS = 0.05
+CHAIN_BONUS = 0.02
 PENALTY_WRONG_ORDER = -0.20
 
 
