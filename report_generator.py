@@ -1,6 +1,6 @@
 def generate_report(task_name, target_ip, difficulty, completed_steps, total_reward, hidden_flag, mistakes, clean_chain):
     risk_level = {"easy": "MEDIUM", "medium": "HIGH", "hard": "CRITICAL"}[difficulty]
-    normalized_score = max(0.011, min(0.989, round(total_reward, 3)))
+    normalized_score = max(1e-6, min(1 - 1e-6, round(total_reward, 6)))
 
     step_details = {
         "scan":      "Performed network reconnaissance using Nmap/Masscan. Identified open ports and running services.",

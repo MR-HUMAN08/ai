@@ -8,29 +8,16 @@ from typing import Dict, List, Tuple
 
 SAFE_TASK_IDS = ["task_1", "task_2", "task_3", "task_4", "task_5", "task_6"]
 
-# Hard bounds: every score must be strictly inside (0, 1).
-# We use wide margins to guarantee safety even after float rounding.
-SCORE_MIN = 0.05
-SCORE_MAX = 0.95
-
-
 def clamp_score(score: float) -> float:
     """Clamp a score to be strictly within (0, 1).
 
     This is the SINGLE source of truth for score bounds.
     Every score — per-task AND overall — MUST pass through here
     before being stored, printed, or serialised.
+
+    Clamp to the open interval (0, 1) using minimal safe margins.
     """
-    # Step 1: hard numeric clamp
-    score = max(SCORE_MIN, min(SCORE_MAX, score))
-    # Re-clamp after numeric operations to keep bounds stable.
-    score = max(SCORE_MIN, min(SCORE_MAX, score))
-    # Absolute safety — if somehow still at boundary, nudge inward.
-    if score <= 0.0:
-        score = SCORE_MIN
-    if score >= 1.0:
-        score = SCORE_MAX
-    return score
+    return max(1e-6, min(1 - 1e-6, score))
 
 
 def parse_inference_output(output: str) -> List[Dict]:

@@ -81,14 +81,10 @@ def safe_reward(r: float) -> float:
     """Ensure reward is STRICTLY between 0 and 1 (never 0.0, never 1.0).
 
     This is critical for Phase 2 evaluation which validates every /step response.
+    Clamp to the open interval (0, 1) using minimal safe margins.
     """
-    clamped = max(0.01, min(0.99, r))
-    # Extra safety: if somehow exactly 0 or 1, nudge inward
-    if clamped <= 0.0:
-        return 0.01
-    if clamped >= 1.0:
-        return 0.99
-    return round(clamped, 3)
+    clamped = max(1e-6, min(1 - 1e-6, r))
+    return round(clamped, 6)
 
 
 class RedTeamPentestEnvironment(Environment[RedTeamAction, RedTeamObservation, RedTeamState]):
